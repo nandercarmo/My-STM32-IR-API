@@ -47,7 +47,6 @@ void My_IR_Listening() {
 				
 				__HAL_TIM_SET_COUNTER(My_IR_Timer, 0);
 				My_IR_IsReceiving = 1;
-				bits = 0;
 			}
 
 		} else {
@@ -106,20 +105,20 @@ void My_IR_GetIrCommandText(char * command) {
 
 	switch(My_IR_Command) {
 
-		case COMMAND_ON_OFF: sprintf(command, "COMMAND_ON_OFF"); break;
-		case COMMAND_CHANNEL_1: sprintf(command, "COMMAND_CHANNEL_1"); break;
-		case COMMAND_CHANNEL_2: sprintf(command, "COMMAND_CHANNEL_2"); break;
-		case COMMAND_CHANNEL_3: sprintf(command, "COMMAND_CHANNEL_3"); break;
-		case COMMAND_CHANNEL_4: sprintf(command, "COMMAND_CHANNEL_4"); break;
-		case COMMAND_CHANNEL_5: sprintf(command, "COMMAND_CHANNEL_5"); break;
-		case COMMAND_CHANNEL_6: sprintf(command, "COMMAND_CHANNEL_6"); break;
-		case COMMAND_CHANNEL_7: sprintf(command, "COMMAND_CHANNEL_7"); break;
-		case COMMAND_CHANNEL_8: sprintf(command, "COMMAND_CHANNEL_8"); break;
-		case COMMAND_CHANNEL_9: sprintf(command, "COMMAND_CHANNEL_9"); break;
-		case COMMAND_CHANNEL_ADD: sprintf(command, "COMMAND_CHANNEL_ADD"); break;
-		case COMMAND_CHANNEL_SUB: sprintf(command, "COMMAND_CHANNEL_SUB"); break;
-		case COMMAND_VOL_ADD: sprintf(command, "COMMAND_VOL_ADD"); break;
-		case COMMAND_VOL_SUB: sprintf(command, "COMMAND_VOL_SUB"); break;
+		case LG_COMMAND_ON_OFF: sprintf(command, "COMMAND_ON_OFF"); break;
+		case LG_COMMAND_CHANNEL_1: sprintf(command, "COMMAND_CHANNEL_1"); break;
+		case LG_COMMAND_CHANNEL_2: sprintf(command, "COMMAND_CHANNEL_2"); break;
+		case LG_COMMAND_CHANNEL_3: sprintf(command, "COMMAND_CHANNEL_3"); break;
+		case LG_COMMAND_CHANNEL_4: sprintf(command, "COMMAND_CHANNEL_4"); break;
+		case LG_COMMAND_CHANNEL_5: sprintf(command, "COMMAND_CHANNEL_5"); break;
+		case LG_COMMAND_CHANNEL_6: sprintf(command, "COMMAND_CHANNEL_6"); break;
+		case LG_COMMAND_CHANNEL_7: sprintf(command, "COMMAND_CHANNEL_7"); break;
+		case LG_COMMAND_CHANNEL_8: sprintf(command, "COMMAND_CHANNEL_8"); break;
+		case LG_COMMAND_CHANNEL_9: sprintf(command, "COMMAND_CHANNEL_9"); break;
+		case LG_COMMAND_CHANNEL_ADD: sprintf(command, "COMMAND_CHANNEL_ADD"); break;
+		case LG_COMMAND_CHANNEL_SUB: sprintf(command, "COMMAND_CHANNEL_SUB"); break;
+		case LG_COMMAND_VOL_ADD: sprintf(command, "COMMAND_VOL_ADD"); break;
+		case LG_COMMAND_VOL_SUB: sprintf(command, "COMMAND_VOL_SUB"); break;
 	}
 }
 

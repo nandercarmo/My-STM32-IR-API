@@ -12,8 +12,8 @@
 <targetDefinitions>
   <board id="nucleo-g474re">
     <name>NUCLEO-G474RE</name>
-    <dbgIF>JTAG</dbgIF>
     <dbgIF>SWD</dbgIF>
+    <dbgIF>JTAG</dbgIF>
     <dbgDEV>ST-Link</dbgDEV>
     <mcuId>stm32g474retx</mcuId>
   </board>
