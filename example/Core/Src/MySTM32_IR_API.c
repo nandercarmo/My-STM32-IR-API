@@ -14,10 +14,9 @@
 
 #include "MySTM32_IR_API.h"
 
-void My_IR_Init(TIM_HandleTypeDef * htim, UART_HandleTypeDef * huart, GPIO_TypeDef * group, uint16_t pin) {
+void My_IR_Init(TIM_HandleTypeDef * htim, GPIO_TypeDef * group, uint16_t pin) {
 	
 	My_IR_Timer = htim;
-	My_IR_Uart = huart;
 	My_IR_PinPort = group;
 	My_IR_Pin = pin;
 
@@ -84,9 +83,9 @@ void My_IR_SetBitReceived(uint32_t bit) {
 	
 	if (My_IR_IsReceiving) {
 		
-		bit <<= My_IR_BitsReceived; // Desloca o bit recebido até a posição correta que ele deve ser inserido
-		My_IR_Command |= bit; // Adiciona o bit a My_IR_Command
-		My_IR_BitsReceived++; // Incrementa a quantidade de bits recebidos
+		bit <<= My_IR_BitsReceived;
+		My_IR_Command |= bit;
+		My_IR_BitsReceived++;
 	}
 	
 	if (My_IR_BitsReceived == 32) {
@@ -126,9 +125,6 @@ void My_IR_GetIrCommandText(char * command) {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim) {
 	
 	if (htim == My_IR_Timer) {
-		
-//		char message[] = "x\n";
-//		HAL_UART_Transmit(My_IR_Uart, (uint8_t *) message, strlen(message), 1000);
 
 		if (My_IR_IsReceiving) My_IR_IsReceiving = 0;
 		else __NOP();

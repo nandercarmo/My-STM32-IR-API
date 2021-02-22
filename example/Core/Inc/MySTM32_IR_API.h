@@ -29,7 +29,7 @@
 #define DELTA_TIME 200
 
 // Functions definitions
-void My_IR_Init(TIM_HandleTypeDef * htim, UART_HandleTypeDef * huart, GPIO_TypeDef * group, uint16_t pin);
+void My_IR_Init(TIM_HandleTypeDef * htim, GPIO_TypeDef * group, uint16_t pin);
 void My_IR_Listening();
 void My_IR_StartCommandReceived();
 void My_IR_SameCommandReceived();

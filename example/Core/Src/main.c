@@ -94,7 +94,7 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	My_IR_Init(&htim2, &huart1, IR_PIN_GPIO_Port, IR_PIN_Pin);
+	My_IR_Init(&htim2, IR_PIN_GPIO_Port, IR_PIN_Pin);
   /* USER CODE END 2 */
 
   /* Infinite loop */
