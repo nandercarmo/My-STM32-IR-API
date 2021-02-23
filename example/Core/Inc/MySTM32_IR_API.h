@@ -27,7 +27,6 @@
 // Defines
 #define TIMER_MULTIPLIER 10
 #define DELTA_TIME 200
-#define ALLOW_REPEAT_COMMAND 0
 
 // Functions definitions
 void My_IR_Init(TIM_HandleTypeDef * htim, GPIO_TypeDef * group, uint16_t pin);
@@ -38,6 +37,7 @@ void My_IR_IdentifyPulse();
 void My_IR_SetBitReceived(uint32_t bit);
 void My_IR_GetIrCommandInHex(char * hexCommand);
 void My_IR_GetIrCommandText(char * command);
+void My_IR_SetAllowRepeatCommand(uint8_t allow);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim);
 
 // Variable Definitions
@@ -51,5 +51,6 @@ uint8_t My_IR_BitsReceived;
 uint32_t My_IR_ElapsedTimeHigh;
 uint32_t My_IR_ElapsedTimeLow;
 uint8_t My_IR_ReadValue;
+uint8_t My_IR_AllowRepeatCommand;
 
 #endif

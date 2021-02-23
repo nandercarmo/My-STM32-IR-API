@@ -75,7 +75,7 @@ void My_IR_StartCommandReceived() {
 
 void My_IR_SameCommandReceived() {
 	
-	if(ALLOW_REPEAT_COMMAND) My_IR_ReceivedNewCommand = 1;
+	if(My_IR_AllowRepeatCommand) My_IR_ReceivedNewCommand = 1;
 	My_IR_IsReceiving = 0;
 }
 
@@ -121,6 +121,11 @@ void My_IR_GetIrCommandText(char * command) {
 		case LG_COMMAND_MUTE: sprintf(command, "COMMAND_VOL_MUTE"); break;
 		default: sprintf(command, "0x%08x", (unsigned int) My_IR_Command); break;
 	}
+}
+
+void My_IR_SetAllowRepeatCommand(uint8_t allow) {
+
+	My_IR_AllowRepeatCommand = allow;
 }
 
 
