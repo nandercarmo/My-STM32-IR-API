@@ -9,7 +9,7 @@ Para testar essa API você vai precisar de um sensor de IR. Durante o desenvolvi
   <img src="images/shield.png" width="500" title="hover text">
 </p>
 
-Essa API foi desenvolvida e testada para o [Kit SMT32 Nucleo-G474RE](https://www.st.com/en/microcontrollers-microprocessors/stm32g474re.html#overview) você pode conferir todas as características desse kit no link disponibilizado e os pinos na imagem imagem:
+Essa API foi desenvolvida e testada para o [Kit SMT32 Nucleo-G474RE](https://www.st.com/en/microcontrollers-microprocessors/stm32g474re.html#overview) você pode conferir todas as características desse kit no link disponibilizado e os pinos na imagem abaixo:
 
 <p align="center">
   <img src="images/stm32.png" width="500" title="hover text">
@@ -199,5 +199,59 @@ Esse arquivo auxiliar da biblioteca define os valores dos comandos mapeados para
 #define LG_COMMAND_MUTE 0xf609fb04
 ```
 
+## Exemplos
 
+### Simples
+
+Uma forma simples de testar essa API no seu Nucleo-G474RE, utilizando o STCubeMX e a SW4ST32 IDE é através da transmissão do comando recebido via serial (no examplo, usando a USART1) para ser controlado por um aplicativo de comunicação serial qualquer. Para testar esse código, basta adicionar o seguinte comando dentro do loop da main:
+
+```c
+My_IR_Listening();
+		
+if (My_IR_ReceivedNewCommand) {
+
+	My_IR_GetIrCommandText(message);
+	UART_TransmitMessage(message);
+	My_IR_ReceivedNewCommand = 0;
+}
+```
+
+Depois disso, você precisa apenas declarar de definir a função UART_TransmitMessage, como mostrado abaixo:
+
+```c
+static void UART_TransmitMessage(char *);
+
+void UART_TransmitMessage(char * message) {
+	
+	char * newLineChar = "\n";
+	strcat(message, newLineChar);
+	HAL_UART_Transmit(&huart1, (uint8_t *) message, strlen(message), 1000);
+}
+```
+Assim, ao pressionar o seguintes botões no controle remoto e na ordem descrita abaixo, você terá como retorno no seu monitor de serial as seguintes mensagens:
+
+- Sequência de Botões: ON/OFF, Botão 0, Botão 1, Botão 2, Botão 3, Botão 4, Botão 5, Botão 6, Botão 7, Botão 8, Botão 9, Channel +, Channel -, Volume +, Volume -, Mute
+
+<p align="center">
+  <img src="images/serial_text.png" width="500" title="hover text">
+</p>
+
+Outro teste simples seria trocar a função My_IR_GetIrCommandText por My_IR_GetIrCommandInHex, recebendo assim como retorno na serial o código em hexadecimal dos comandos:
+
+```c
+My_IR_Listening();
+		
+if (My_IR_ReceivedNewCommand) {
+
+	My_IR_GetIrCommandInHex(message);
+	UART_TransmitMessage(message);
+	My_IR_ReceivedNewCommand = 0;
+}
+```
+
+<p align="center">
+  <img src="images/serial_hex.png" width="500" title="hover text">
+</p>
+
+### Aplicação Complexa
 
