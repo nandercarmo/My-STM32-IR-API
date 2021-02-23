@@ -44,6 +44,9 @@ UART_HandleTypeDef hlpuart1;
 UART_HandleTypeDef huart1;
 
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN PV */
 
@@ -55,8 +58,12 @@ static void MX_GPIO_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_TIM4_Init(void);
+static void MX_TIM17_Init(void);
 /* USER CODE BEGIN PFP */
 static void UART_TransmitMessage(char *);
+static void setPWM(TIM_HandleTypeDef, uint32_t, uint16_t, uint16_t);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -71,6 +78,11 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 	char message[16];
+	uint8_t isOn = 0;
+	uint8_t channel1Freq = 50;
+	uint8_t channel2Freq = 50;
+	uint8_t channel3Freq = 50;
+	uint8_t channel = 1;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -93,6 +105,9 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_TIM2_Init();
   MX_USART1_UART_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
+  MX_TIM17_Init();
   /* USER CODE BEGIN 2 */
 	My_IR_Init(&htim2, IR_PIN_GPIO_Port, IR_PIN_Pin);
   /* USER CODE END 2 */
@@ -109,40 +124,68 @@ int main(void)
 			UART_TransmitMessage(message);
 
 			My_IR_ReceivedNewCommand = 0;
-		}
-		
-//		if (!HAL_UART_Receive(&huart3, caractere, 1, 1000)) {
-//
-//			strcpy(message, (char *) caractere);
-//			UART_TransmitMessage(message);
-//		}
-		
-//		My_IR_GetIrCommandInHex(timerCount, message);
-//		UART_TransmitMessage(message);
-//		timerCount++;
-//		HAL_Delay(1000);
-		
-//		newValue = HAL_GPIO_ReadPin(IR_PIN_GPIO_Port, IR_PIN_Pin) == GPIO_PIN_SET ? 1 : 0;
-//
-//		if(newValue != oldValue) {
-//
-//			sprintf(bit, "%i", newValue);
-//
-//			oldValue = newValue;
-//			HAL_UART_Transmit(&huart1, (uint8_t *) bit, strlen(bit), 1000);
-//		}
-		
-//		timerCount = __HAL_TIM_GET_COUNTER(&htim2);
-//		HAL_Delay(50);
-//		timerCount = __HAL_TIM_GET_COUNTER(&htim2) - timerCount;
-//
-//		sprintf(message, "%u us", timerCount);
-//		UART_TransmitMessage(message);
-//
-//		HAL_Delay(50);
-    /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+			switch (My_IR_Command) {
+
+				case LG_COMMAND_ON_OFF:
+
+					isOn = isOn ? 0 : 1;
+					break;
+
+				case LG_COMMAND_CHANNEL_1:
+
+					channel = 1;
+					break;
+
+				case LG_COMMAND_CHANNEL_2:
+
+					channel = 2;
+					break;
+
+				case LG_COMMAND_CHANNEL_3:
+
+					channel = 3;
+					break;
+
+				case LG_COMMAND_CHANNEL_ADD:
+
+					channel = channel < 3 ? channel + 1 : 1;
+					break;
+
+				case LG_COMMAND_CHANNEL_SUB:
+
+					channel = channel > 1 ? channel - 1 : 3;
+					break;
+
+				case LG_COMMAND_VOL_ADD:
+
+					if(channel == 1) channel1Freq = channel1Freq > 5 ? channel1Freq - 5 : 5;
+					if(channel == 2) channel2Freq = channel2Freq > 5 ? channel2Freq - 5 : 5;
+					if(channel == 3) channel3Freq = channel3Freq > 5 ? channel3Freq - 5 : 5;
+					break;
+
+				case LG_COMMAND_VOL_SUB:
+
+					if(channel == 1) channel1Freq = channel1Freq < 50 ? channel1Freq + 5 : 50;
+					if(channel == 2) channel2Freq = channel2Freq < 50 ? channel2Freq + 5 : 50;
+					if(channel == 3) channel3Freq = channel3Freq < 50 ? channel3Freq + 5 : 50;
+					break;
+
+				case LG_COMMAND_MUTE:
+
+					if(channel == 1) channel1Freq = channel1Freq == 0 ? 50 : 0;
+					if(channel == 2) channel2Freq = channel2Freq == 0 ? 50 : 0;
+					if(channel == 3) channel3Freq = channel3Freq == 0 ? 50 : 0;
+					break;
+
+				default:
+					break;
+			}
+
+			setPWM(htim3, TIM_CHANNEL_2, channel1Freq == 0 ? 5 : channel1Freq * 200, channel1Freq * 100 * isOn * (channel == 1));
+			setPWM(htim17, TIM_CHANNEL_1, channel2Freq == 0 ? 5 : channel2Freq * 200, channel2Freq * 100 * isOn * (channel == 2));
+			setPWM(htim4, TIM_CHANNEL_1, channel3Freq == 0 ? 5 : channel3Freq * 200, channel3Freq * 100 * isOn * (channel == 3));
+		}
 	}
   /* USER CODE END 3 */
 }
@@ -340,6 +383,167 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 10*1000;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 10000;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 10*1000;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 10000;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+  HAL_TIM_MspPostInit(&htim4);
+
+}
+
+/**
+  * @brief TIM17 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM17_Init(void)
+{
+
+  /* USER CODE BEGIN TIM17_Init 0 */
+
+  /* USER CODE END TIM17_Init 0 */
+
+  TIM_OC_InitTypeDef sConfigOC = {0};
+  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+
+  /* USER CODE BEGIN TIM17_Init 1 */
+
+  /* USER CODE END TIM17_Init 1 */
+  htim17.Instance = TIM17;
+  htim17.Init.Prescaler = 10*1000;
+  htim17.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim17.Init.Period = 10000;
+  htim17.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim17.Init.RepetitionCounter = 0;
+  htim17.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim17) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_OC_Init(&htim17) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if (HAL_TIM_OC_ConfigChannel(&htim17, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+  sBreakDeadTimeConfig.DeadTime = 0;
+  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+  sBreakDeadTimeConfig.BreakFilter = 0;
+  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+  if (HAL_TIMEx_ConfigBreakDeadTime(&htim17, &sBreakDeadTimeConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM17_Init 2 */
+
+  /* USER CODE END TIM17_Init 2 */
+  HAL_TIM_MspPostInit(&htim17);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -389,6 +593,26 @@ void UART_TransmitMessage(char * message) {
 	strcat(message, newLineChar);
 	
 	HAL_UART_Transmit(&huart1, (uint8_t *) message, strlen(message), 1000);
+}
+
+static void setPWM(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, uint16_t pulse) {
+
+	TIM_OC_InitTypeDef sConfigOC;
+	sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	sConfigOC.Pulse = pulse;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+
+	timer.Init.Period = period;
+
+	HAL_TIM_PWM_Stop(&timer, channel);
+	HAL_TIM_PWM_Init(&timer);
+	HAL_TIM_PWM_ConfigChannel(&timer, &sConfigOC, channel);
+	HAL_TIM_PWM_Start(&timer, channel);
+	__HAL_TIM_SET_COMPARE(&timer, channel, pulse);
 }
 /* USER CODE END 4 */
 

@@ -27,6 +27,7 @@
 // Defines
 #define TIMER_MULTIPLIER 10
 #define DELTA_TIME 200
+#define ALLOW_REPEAT_COMMAND 0
 
 // Functions definitions
 void My_IR_Init(TIM_HandleTypeDef * htim, GPIO_TypeDef * group, uint16_t pin);
@@ -41,7 +42,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim);
 
 // Variable Definitions
 TIM_HandleTypeDef * My_IR_Timer;
-UART_HandleTypeDef * My_IR_Uart;
 uint16_t My_IR_Pin;
 GPIO_TypeDef * My_IR_PinPort;
 uint8_t My_IR_IsReceiving;

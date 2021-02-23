@@ -60,8 +60,8 @@ void My_IR_Listening() {
 
 void My_IR_IdentifyPulse() {
 
-	if (My_IR_ElapsedTimeHigh >= 6800 - DELTA_TIME && My_IR_ElapsedTimeHigh <= 6800 + DELTA_TIME && My_IR_ElapsedTimeLow >= 4500 - DELTA_TIME && My_IR_ElapsedTimeLow <= 4500 + DELTA_TIME) My_IR_StartCommandReceived();
-	else if (My_IR_ElapsedTimeHigh >= 6800 - DELTA_TIME && My_IR_ElapsedTimeHigh <= 6800 + DELTA_TIME && My_IR_ElapsedTimeLow >= 2200 - DELTA_TIME && My_IR_ElapsedTimeLow <= 2200 + DELTA_TIME) My_IR_SameCommandReceived();
+	if (My_IR_ElapsedTimeHigh >= 9000 - DELTA_TIME && My_IR_ElapsedTimeHigh <= 9000 + DELTA_TIME && My_IR_ElapsedTimeLow >= 4500 - DELTA_TIME && My_IR_ElapsedTimeLow <= 4500 + DELTA_TIME) My_IR_StartCommandReceived();
+	else if (My_IR_ElapsedTimeHigh >= 9000 - DELTA_TIME && My_IR_ElapsedTimeHigh <= 9000 + DELTA_TIME && My_IR_ElapsedTimeLow >= 2200 - DELTA_TIME && My_IR_ElapsedTimeLow <= 2200 + DELTA_TIME) My_IR_SameCommandReceived();
 	else if (My_IR_ElapsedTimeHigh >= 500 - DELTA_TIME && My_IR_ElapsedTimeHigh <= 500 + DELTA_TIME && My_IR_ElapsedTimeLow >= 600 - DELTA_TIME && My_IR_ElapsedTimeLow <= 600 + DELTA_TIME) My_IR_SetBitReceived(0);
 	else if (My_IR_ElapsedTimeHigh >= 500 - DELTA_TIME && My_IR_ElapsedTimeHigh <= 500 + DELTA_TIME && My_IR_ElapsedTimeLow >= 1700 - DELTA_TIME && My_IR_ElapsedTimeLow <= 1700 + DELTA_TIME) My_IR_SetBitReceived(1);
 }
@@ -75,7 +75,7 @@ void My_IR_StartCommandReceived() {
 
 void My_IR_SameCommandReceived() {
 	
-	My_IR_ReceivedNewCommand = 1;
+	if(ALLOW_REPEAT_COMMAND) My_IR_ReceivedNewCommand = 1;
 	My_IR_IsReceiving = 0;
 }
 
@@ -118,6 +118,8 @@ void My_IR_GetIrCommandText(char * command) {
 		case LG_COMMAND_CHANNEL_SUB: sprintf(command, "COMMAND_CHANNEL_SUB"); break;
 		case LG_COMMAND_VOL_ADD: sprintf(command, "COMMAND_VOL_ADD"); break;
 		case LG_COMMAND_VOL_SUB: sprintf(command, "COMMAND_VOL_SUB"); break;
+		case LG_COMMAND_MUTE: sprintf(command, "COMMAND_VOL_MUTE"); break;
+		default: sprintf(command, "0x%08x", (unsigned int) My_IR_Command); break;
 	}
 }
 
