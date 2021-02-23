@@ -23,6 +23,7 @@ void My_IR_Init(TIM_HandleTypeDef * htim, GPIO_TypeDef * group, uint16_t pin) {
 	My_IR_ReadValue = 0;
 	My_IR_ReceivedNewCommand = 0;
 	My_IR_IsReceiving = 0;
+	My_IR_AllowRepeatCommand = 1;
 
 	HAL_TIM_Base_Start_IT(My_IR_Timer);
 }
@@ -105,6 +106,7 @@ void My_IR_GetIrCommandText(char * command) {
 	switch(My_IR_Command) {
 
 		case LG_COMMAND_ON_OFF: sprintf(command, "COMMAND_ON_OFF"); break;
+		case LG_COMMAND_CHANNEL_0: sprintf(command, "COMMAND_CHANNEL_0"); break;
 		case LG_COMMAND_CHANNEL_1: sprintf(command, "COMMAND_CHANNEL_1"); break;
 		case LG_COMMAND_CHANNEL_2: sprintf(command, "COMMAND_CHANNEL_2"); break;
 		case LG_COMMAND_CHANNEL_3: sprintf(command, "COMMAND_CHANNEL_3"); break;

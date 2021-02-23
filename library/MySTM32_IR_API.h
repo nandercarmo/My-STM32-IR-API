@@ -29,7 +29,7 @@
 #define DELTA_TIME 200
 
 // Functions definitions
-void My_IR_Init(TIM_HandleTypeDef * htim, UART_HandleTypeDef * huart, GPIO_TypeDef * group, uint16_t pin);
+void My_IR_Init(TIM_HandleTypeDef * htim, GPIO_TypeDef * group, uint16_t pin);
 void My_IR_Listening();
 void My_IR_StartCommandReceived();
 void My_IR_SameCommandReceived();
@@ -37,11 +37,11 @@ void My_IR_IdentifyPulse();
 void My_IR_SetBitReceived(uint32_t bit);
 void My_IR_GetIrCommandInHex(char * hexCommand);
 void My_IR_GetIrCommandText(char * command);
+void My_IR_SetAllowRepeatCommand(uint8_t allow);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim);
 
 // Variable Definitions
 TIM_HandleTypeDef * My_IR_Timer;
-UART_HandleTypeDef * My_IR_Uart;
 uint16_t My_IR_Pin;
 GPIO_TypeDef * My_IR_PinPort;
 uint8_t My_IR_IsReceiving;
@@ -51,5 +51,6 @@ uint8_t My_IR_BitsReceived;
 uint32_t My_IR_ElapsedTimeHigh;
 uint32_t My_IR_ElapsedTimeLow;
 uint8_t My_IR_ReadValue;
+uint8_t My_IR_AllowRepeatCommand;
 
 #endif

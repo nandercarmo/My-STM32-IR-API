@@ -29,5 +29,6 @@
 #define LG_COMMAND_CHANNEL_SUB 0xfe01fb04
 #define LG_COMMAND_VOL_ADD 0xfd02fb04
 #define LG_COMMAND_VOL_SUB 0xfc03fb04
+#define LG_COMMAND_MUTE 0xf609fb04
 
 #endif
