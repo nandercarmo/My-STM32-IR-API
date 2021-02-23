@@ -275,8 +275,10 @@ Cada canal possui uma frequência de oscilação associada que pode ser controla
 - Botão 1: Vai para o canal 1
 - Botão 2: Vai para o canal 2
 - Botão 3: Vai para o canal 3
-- Botão Channel + : Vai para o próximo canal de forma cíclica (ex: canal 1 -> 2, canal 2 -> canal 3, canal 3 -> canal -> 1, ...)
-- Botão Channel - : Vai para o canal anterior de forma cíclica (ex: canal 1 -> 3, canal 3 -> canal 2, canal 2 -> canal -> 1, ...)
+- Botão Channel + : Vai para o próximo canal de forma cíclica 
+	- Ex: canal 1 -> 2, canal 2 -> canal 3, canal 3 -> canal -> 1, ...
+- Botão Channel - : Vai para o canal anterior de forma cíclica 
+	- Ex: canal 1 -> 3, canal 3 -> canal 2, canal 2 -> canal -> 1, ...
 
 Ainda é possível zerar a oscilação do canal pressionando o botão Mute do controle, fazendo com que o LED fique cosntantemente desligado. Pressionar o booa Mute de novo fará com que o LED volte a piscar na frequência de 1Hz.
 
