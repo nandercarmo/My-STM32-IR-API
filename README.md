@@ -2,6 +2,10 @@
 # My-STM32-IR-API
 This project aims to consolidate the lessons of the UFMG "Embedded Systems Programming" course about the development of microcontrollers APIs, in this case for STM32 microcontrollers.
 
+You can check this API working in the video bellow:
+
+[![Watch the video](images/video.png)](https://youtu.be/Hc2-oqp9iqE)
+
 ## Hardware
 Para testar essa API você vai precisar de um sensor de IR. Durante o desenvolvimento utilizamos uma Shield Multifunções para Arduino, de forma a simplificar a montagem (inclusive o desenvolvimento da aplicação de exemplo). Os pinos e componentes da [shield](https://www.eletrogate.com/shield-multifuncoes-para-arduino-com-sensores) usada você pode ver na imagem abaixo:
 
@@ -253,5 +257,33 @@ if (My_IR_ReceivedNewCommand) {
   <img src="images/serial_hex.png" width="500" title="hover text">
 </p>
 
-### Aplicação Complexa
+### Vídeo Demonstrativo da Aplicação de Exemplo
+
+A aplicação disponibilizada na pasta 'example' desta biblioteca pode ser testada usando o STMCubeMX juntamente da SW4STM32 e basicamente simula um sistema que possui 3 canais, cada um indicado por um LED da seguinte forma:
+
+- Canal 1: LED Vermelho
+- Canal 2: LED Verde
+- Canal 3: LED Azul
+
+Cada canal possui uma frequência de oscilação associada que pode ser controlada através dos botões de volume do controle:
+
+- Botão Volume + : Aumenta a frequência de oscilação do LED em 1Hz até um máximo de 10Hz
+- Botão Volume - : Diminui a frequência de oscilação do LED em 1Hz até o mínimo de 1Hz
+
+É possível alternar entre os canais através do pressionameneto dos botões de canal do controle ou do pressionamento do número corresponde a um dos 3 canais:
+
+- Botão 1: Vai para o canal 1
+- Botão 2: Vai para o canal 2
+- Botão 3: Vai para o canal 3
+- Botão Channel + : Vai para o próximo canal de forma cíclica (ex: canal 1 -> 2, canal 2 -> canal 3, canal 3 -> canal -> 1, ...)
+- Botão Channel - : Vai para o canal anterior de forma cíclica (ex: canal 1 -> 3, canal 3 -> canal 2, canal 2 -> canal -> 1, ...)
+
+Ainda é possível zerar a oscilação do canal pressionando o botão Mute do controle, fazendo com que o LED fique cosntantemente desligado. Pressionar o booa Mute de novo fará com que o LED volte a piscar na frequência de 1Hz.
+
+Para testar esse programa foi usado o LED RGB presente na shield mencionada anteriormente e cada pino desse LED RGB foi associado a um canal PWM de um Timer (TIM3 CH2 -> R, TIM17 CH1 -> G e TIM4 CH1 -> B), onde cada um dos timers foi configurado com um Prescaler de 10000 e um Counter Period de 10000, de forma a obter um período de 1s par ticks de 1µs cada. A conexão dos pinos pode ser inferida das imagens fornecidas anteriormente.
+
+O funcionamento desse exemplo pode ser visto no vídeo no início desse repo e os códigos estão disponíveis na pasta 'example'.
+
+
+
 
