@@ -8,7 +8,11 @@ Para testar essa API você vai precisar de um sensor de IR. Durante o desenvolvi
   <img src="images/shield.png" width="500" title="hover text">
 </p>
 
-Essa API foi desenvolvida e testada para o [Kit SMT32 Nucleo-G474RE](https://www.st.com/en/microcontrollers-microprocessors/stm32g474re.html#overview) você pode conferir todas as características desse kit no link disponibilizado.
+Essa API foi desenvolvida e testada para o [Kit SMT32 Nucleo-G474RE](https://www.st.com/en/microcontrollers-microprocessors/stm32g474re.html#overview) você pode conferir todas as características desse kit no link disponibilizado e os pinos na imagem imagem:
+
+<p align="center">
+  <img src="images/stm32.png" width="500" title="hover text">
+</p>
 
 ## IR Protocol
 
