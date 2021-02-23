@@ -288,9 +288,12 @@ O funcionamento desse exemplo pode ser visto no vídeo no início desse repo e o
 
 ## Referências
 
-[ SIRC Remote Protocol Example (Another Protocol)](https://www.instructables.com/SIRC-Remote-Control/)
-[NEC Protocol](https://techdocs.altium.com/display/FPGA/NEC+Infrared+Transmission+Protocol)
-[IR Remote Control for LG](https://funembedded.wordpress.com/2014/11/08/ir-remote-control-for-lg-conditioner-using-stm32f302-mcu-on-mbed-platform/)
-[Shield](https://wiki.keyestudio.com/Ks0183_keyestudio_Multi-purpose_Shield_V1)
+- [ SIRC Remote Protocol Example (Another Protocol)](https://www.instructables.com/SIRC-Remote-Control/)
+
+- [NEC Protocol](https://techdocs.altium.com/display/FPGA/NEC+Infrared+Transmission+Protocol)
+
+- [IR Remote Control for LG](https://funembedded.wordpress.com/2014/11/08/ir-remote-control-for-lg-conditioner-using-stm32f302-mcu-on-mbed-platform/)
+
+- [Shield](https://wiki.keyestudio.com/Ks0183_keyestudio_Multi-purpose_Shield_V1)
 
 
