@@ -257,7 +257,7 @@ if (My_IR_ReceivedNewCommand) {
   <img src="images/serial_hex.png" width="500" title="hover text">
 </p>
 
-### Vídeo Demonstrativo da Aplicação de Exemplo
+### Aplicação de Exemplo
 
 A aplicação disponibilizada na pasta 'example' desta biblioteca pode ser testada usando o STMCubeMX juntamente da SW4STM32 e basicamente simula um sistema que possui 3 canais, cada um indicado por um LED da seguinte forma:
 
