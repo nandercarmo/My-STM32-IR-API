@@ -2,18 +2,18 @@
 # My-STM32-IR-API
 This project aims to consolidate the lessons of the UFMG "Embedded Systems Programming" course about the development of microcontrollers APIs, in this case for STM32 microcontrollers.
 
-You can check this API working in the video bellow:
+You can check this API working in the video below:
 
 [![Watch the video](images/video.png)](https://youtu.be/Hc2-oqp9iqE)
 
 ## Hardware
-Para testar essa API você vai precisar de um sensor de IR. Durante o desenvolvimento utilizamos uma Shield Multifunções para Arduino, de forma a simplificar a montagem (inclusive o desenvolvimento da aplicação de exemplo). Os pinos e componentes da [shield](https://www.eletrogate.com/shield-multifuncoes-para-arduino-com-sensores) usada você pode ver na imagem abaixo:
+To test this API you will need a IR sensor. During the development we used a Multifunction Shield for Arduino, as a way to simplify the building and development. All the pins and components of the [shield](https://www.eletrogate.com/shield-multifuncoes-para-arduino-com-sensores) used are listed on the image below:
 
 <p align="center">
   <img src="images/shield.png" width="500" title="hover text">
 </p>
 
-Essa API foi desenvolvida e testada para o [Kit SMT32 Nucleo-G474RE](https://www.st.com/en/microcontrollers-microprocessors/stm32g474re.html#overview) você pode conferir todas as características desse kit no link disponibilizado e os pinos na imagem abaixo:
+This API was developed using the [Kit SMT32 Nucleo-G474RE](https://www.st.com/en/microcontrollers-microprocessors/stm32g474re.html#overview), you can check all the characteristics of the kit on the avaliable link and all the pins on the image bellow:
 
 <p align="center">
   <img src="images/stm32.png" width="500" title="hover text">
@@ -21,28 +21,29 @@ Essa API foi desenvolvida e testada para o [Kit SMT32 Nucleo-G474RE](https://www
 
 ## IR Protocol
 
-A API desenvolvida é baseada em um protocolo de comunicação IR chamado NEC. Esse protocolo é um dos mais utilizados comercialmente e apresenta um baixo nível de complexidade e, como esperado, trabalha em cima de uma portadora com frequência de 38khz. Basicamente um comando enviado nesse protocolo segue o seguinte padrão:
+The developed API is based on the IR communication protocol named NEC. This protocol is one of the most commercially used, has low complexity, and, as expected, works with a carrier at the frequency of 38KHz. A command sends in this protocol follow this pattern:
 
-- Um pulso de 9ms de largura seguido de um espaço de 4.5ms indica que um comando será enviado (bit de start do protocolo)
-- Na sequência serão enviados 32 pulsos, que compõe um comando de 32 bits de comprimento organizados da seguinte forma:
-	- 8 bits correspondentes ao endereço do dispositivo
-	- 8 bits correspondentes ao endereço do dispositivo com a lógica invertida
-	- 8 bits correspondentes ao comando enviado
-	- 8 bits correspondentes ao comando enviado com a lógica invertida
-	- Um pulso de 562.5µs que indica que o comando acabou
-- Um pulso de 562.5µs seguido de um espaço de também 562.5µs indica o envio de um bit 0
-- Um pulso de 562.5µs seguido de um espaço de 1.6875ms indica o recebimento de um bit 1
+- A pulse with 9ms of width follow by a space of 4.5ms indicates that a command will be sent (start bit of protocol)
+- In sequence, 32 pulses, which compose 32 bits of length command, are sent, in the following way:
+	- 8 bits corresponding to the address of the device
+	- 8 bits corresponding to the address of the device with inverted logic
+	- 8 bits corresponding to the command sent
+	- 8 bits corresponding to the command sent with inverted logic
+	- A pulse with 562.5µs length that indicates the command is finished
+- A pulse with 562.5µs width followed by one space of 562.5µs width too indicates that was sent a bit 0
+- A pulse with 562.5µs width followed by one space of 1.6875ms width too indicates that was sent a bit 1
 
-Um exemplo de um sinal contendo um comando usando esse protocolo pode ser observado na imagem abaixo:
+An example of a signal containg a command using the protocol can be observed on the image below:
 
 <p align="center">
   <img src="images/nec_protocol.png" width="500" title="hover text">
 </p>
 
-Além desses comando simples, caso o mesmo comando seja enviado repetidas vezes (por exemplo, mantendo o botão de um controle remoto pressionado), o sinal transmitido que indica a repetição do comando está representado na imagem abaixo e é composto por:
+If a command is sent repeatedly, maintaining the button pressed, the signal transmitted indicates a repetition of the command is represented on the image below and is composed by:
 
-- Um pulso de 9ms, que indica o início de um novo comando, porém seguido por um espaço de apenas 2.25ms dessa vez, indicando que se trata de um comando repetido
-- Um pulso de  562.5µs que indica que o comando acabou
+
+- A pulse with 9ms of width, indicates the beginning of a new command, but followed by a space of 2.25ms this time indicating a repetition of the previous command;
+- A pulse with 562.5µs of width indicates the command is finished
 
 <p align="center">
   <img src="images/nec_rep_protocol.png" width="500" title="hover text">
@@ -55,135 +56,121 @@ Além desses comando simples, caso o mesmo comando seja enviado repetidas vezes 
 ```c
 #define TIMER_MULTIPLIER 10
 ```
-- Define o valor do multiplicador de tempo que deve ser aplicado ao obter o valor do contador do timer. Como o timer foi configurado para que cada tick seja de 10µs essa constante é igual a 10
+- Defines a value of the time multiplier which should be applied when receiving a time counter. As the timer was configured so that each clock tick be 10µs this value should be equals to 10. 
 ```c
 #define DELTA_TIME 200
 ```
-- Define um intervalo de tolerância que a duração de cada um dos pulsos do comando recebido pode ter e ainda ser identificado corretamente
+- Defines a tolerance interval which each pulse from the command received can have and still be correctly identified.
 
-### Variáveis
+### Variables
 
 ```c
 TIM_HandleTypeDef * My_IR_Timer;
 ```
-- Ponteiro para a estrutura que controla o timer
+- Pointer to the struct that controls the timer.
 ```c
 uint16_t My_IR_Pin;
 ```
-- Variável que armazena o pino que o sensor IR está conectado
+- Variable that stores which pins the IR sensor is connected.
 ```c
 GPIO_TypeDef * My_IR_PinPort;
 ```
-- Ponteiro para a estrutura que representa a porta correspondente ao pino do sensor IR
+- Pointer to the struct that represents the correspondent Port to the IR sensor pin.
 ```c
 uint8_t My_IR_IsReceiving;
 ```
-- Flag que indica que um comando está sendo recebido
+- Flag that indicates which command is been received.
 ```c
 uint8_t My_IR_ReceivedNewCommand;
 ```
-- Flag que indica que um comando foi recebido e que pode ser tratado pela aplicação
+- Flag that indicates which command was received and handled by the API.
 ```c
 uint32_t My_IR_Command;
 ```
-- Variável que armazena o comando recebido
+- Variable that stores the command received.
 ```c
 uint8_t My_IR_BitsReceived;
 ```
-- Variável que monitora a quantidade de bits do comando já foram recebidos
+- Variable that monitors the number of bits from the command that was already received.
 ```c
 uint32_t My_IR_ElapsedTimeHigh;
 ```
-- Variável que armazena o tempo em nível lógico alto do pulso recebido
+- Variable that stores the time in logic level High of a received pulse.
 ```c
 uint32_t My_IR_ElapsedTimeLow;
 ```
-- Variável que armazena o tempo em nível lógico baixo do pulso recebido
+- Variable that stores the time in logic level Low of a received pulse.
 ```c
 uint8_t My_IR_ReadValue;
 ```
-- Variável que armazena o último valor recebido pelo sensor IR (0 ou 1) de forma a tratar apenas as bordas de subida e descida geradas por ele
+- Variable that stores the lab value received by the IR sensor (0 or 1), in order to handle only the rising and falling edge generated by him.
 ```c
 uint8_t My_IR_AllowRepeatCommand;
 ```
-- Flag que determina se a API irá aceitar ou não o recebimento de sinais repetidos
+- Flag which determines if the API will accept repeated signals or no.
 
-### Funções
+### Functions
 
 ```c
 void My_IR_Init(TIM_HandleTypeDef * htim, GPIO_TypeDef * group, uint16_t pin);
 ```
-- Função responsável por inicializar as flags da API e por atribuir os valores dos parâmetros externos usados por ela (Timer, GPIO Port e Pin)
-- Essa função recebe como parâmetros:
-	-  um ponteiro para a estrutura que controla o timer
-	- Um ponteiro para a estrutura que corresponde à porta GPIO do pino utilizado pelo sensor IR
-	- O valor do pino do sensor IR
-- Essa função não possui retorno
+- This Function is responsible for initializing the flags of the API and for assigning the values of the external parameters used (Timer, GPIO Port, and Pin).
+- This function receives as a parameter:
+	- A pointer to the struct that controls the timer
+	- A pointer correspondent to GPIO Port used by IR sensor
+	- The value of the IR sensor Pin
 
 ```c
 void My_IR_Listening();
 ```
-- Função responsável por monitorar o pino do sensor IR e por identificar quando um pulso foi recebido. Essa função calcula o tempo de nível lógico alto e baixo dos pulsos recebidos e chama a função My_IR_IdentifyPulse() que identifica o pulso recebido. Essa função é a responsável por gerenciar o timer
-- Essa função não recebe parâmetros
-- Essa função não possui retorno
+- This function is responsible for monitoring the IR sensor pin and for identifying when a pulse is received. This function calculates the time spent in logic level High and Low for each pulse received and calls the function My_IR_IdentifyPulse() which identifies the received pulse. This function is responsible for managing the timer
 ```c
 void My_IR_IdentifyPulse();
 ```
-- Função responsável por identificar de acordo com a duração do pulso em nível lógico alto e baixo qual pulso do protocolo NEC foi recebido (start code, repeat command code, bit 1, bit 0). De acordo com o valor identificado para o pulso essa função chama internamente uma das três funções a seguir: My_IR_StartCommandReceived(), My_IR_SameCommandReceived(), My_IR_SetBitReceived(0) ou My_IR_SetBitReceived(1)
-- Essa função não recebe parâmetros
-- Essa função não possui retorno
+- This function is responsible for identifies, according to the duration of the pulse in logic level High or Low, which pulse of the NEC protocol was received(start code, repeat command code, bit 1, bit 0). The function calls internally one of the three following functions relying upon the value identified for the pulse: My_IR_StartCommandReceived(), My_IR_SameCommandReceived(), My_IR_SetBitReceived(0) ou My_IR_SetBitReceived(1).
 ```c
 void My_IR_StartCommandReceived();
 ```
-- Função responsável por resetar as variáveis My_IR_BitsReceived, My_IR_Command e My_IR_ReceivedNewCommand quando o pulso que indica o recebimento de um novo comando é identificado
-- Essa função não recebe parâmetros
-- Essa função não possui retorno
+- This function is responsible for resetting the variables My_IR_BitsReceived, My_IR_Command e My_IR_ReceivedNewCommand when a pulse that indicates receiving of a new command is identified.
 ```c
 void My_IR_SameCommandReceived();
 ```
-- Função responsável por verificar se a flag My_IR_AllowRepeatCommand está habilitada (por padrão ela é inicializada como true)
-- Essa função não recebe parâmetros
-- Essa função não possui retorno
+- This function is reponsible for verify if the flag My_IR_AllowRepeatCommand enabled (default value: true)
 ```c
 void My_IR_SetBitReceived(uint32_t bit);
 ```
-- Função responsável por adicionar o bit recebido e identificado na posição correta do comando de 32 bits My_IR_Command, por setar a flag My_IR_ReceivedNewCommand quando todos os 32 bits do comando forem recebidos e desativar a flag My_IR_IsReceiving, identificando que o comando já foi recebido
-- Essa função recebe como parâmetros:
-	- O valor do bit recebido
-- Essa função não possui retorno
+- This function is responsible for adding a received bit and identify the correct position of the 32 bits command My_IR_Command, and for setting the flag My_IR_ReceivedNewCommand when all 32 bits of the command were received, and disable the flag My_IR_IsReceiving, identifying the command is already received. 
+- This Function receives as a parameter:
+	- The value of the received bit
 ```c
 void My_IR_GetIrCommandInHex(char * hexCommand);
 ```
-- Função responsável por retornar o valor em hexadecimal do comando recebido em forma de string
-- Essa função recebe como parâmetros:
-	- O ponteiro para a string que vai receber o comando convertido
-- Essa função não possui retorno
+- This function is responsible for return a Hexadecimal value of the received command as a string.
+- This function receives as a parameter:
+	- The pointer for the string that will receive the command converted
 ```c
 void My_IR_GetIrCommandText(char * command);
 ```
-- Função responsável por retornar o identificador do comando recebido em forma de string ou o valor em hexadecimal do comando caso esse seja desconhecido
-- Essa função recebe como parâmetros:
-	- O ponteiro para a string que vai receber o identificador do convertido
-- Essa função não possui retorno
+- This function is responsible for return an identifier of the command or a Hexadecimal if the command is unknown.
+- This function receives as a parameter:
+	- The pointer for the string that will receive the identifier of the converted
 ```c
 void My_IR_SetAllowRepeatCommand(uint8_t allow);
 ```
-- Função responsável por setar a flag My_IR_AllowRepeatCommand que habilita o desabilita o recebimento de comandos repetidos
-- Essa função recebe como parâmetros:
-	- O valor de atribuição da flag (tipicamente 0 ou 1)
-- Essa função não possui retorno
+- This function is responsible for setting the flag  My_IR_AllowRepeatCommand which enables or disables the receiving of repeated commands.
+- This function receives as a parameter:
+	- The value of the flag (0 or 1)
 ```c
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim);
 ```
-- Função de callback chamada quanto o timer estoura indicando que se passaram 100ms, o que ocorre apenas se o recebimento do comando for comprometido, assim essa função reseta My_IR_IsReceiving, indicando que o comando não está mais sendo recebido
-- Essa função recebe como parâmetros:
-	- A estrutura do timer que provocou a chamada dessa callback
-- Essa função não possui retorno
+- This callback function is called when we have a time out indicating that has passed 100ms, which happens when the receiving command is corrupted, therefore this function reset My_IR_IsReceiving, indicating that the command is no longer being received.
+- This function receives as a parameter:
+	- The timer struct that causes this call
 
-### Arquivo MySTM32_LG_Commands.h
 
-Esse arquivo auxiliar da biblioteca define os valores dos comandos mapeados para o controle de televisão da AKB74475448 da LG, que são:
+### File MySTM32_LG_Commands.h
 
+This file defines the values of the commands mapped for a controller for a TV AKB74475448 from LG, which are:
 ```c
 #define LG_COMMAND_ON_OFF 0xf708fb04
 #define LG_COMMAND_CHANNEL_0 0xef10fb04
@@ -203,11 +190,11 @@ Esse arquivo auxiliar da biblioteca define os valores dos comandos mapeados para
 #define LG_COMMAND_MUTE 0xf609fb04
 ```
 
-## Exemplos
+## Examples
 
-### Simples
+### Simple way
 
-Uma forma simples de testar essa API no seu Nucleo-G474RE, utilizando o STCubeMX e a SW4ST32 IDE é através da transmissão do comando recebido via serial (no examplo, usando a USART1) para ser controlado por um aplicativo de comunicação serial qualquer. Para testar esse código, basta adicionar o seguinte comando dentro do loop da main:
+A simple way for testing this API on your NUCLEO-G474RE, using STCubeMX and SW4ST32 IDE is through the transmission of the command by serialPort (E.G. using USART1) to be able to control any serial communication application. To test this code, just add the following code inside the loop of the main function:
 
 ```c
 My_IR_Listening();
@@ -220,7 +207,7 @@ if (My_IR_ReceivedNewCommand) {
 }
 ```
 
-Depois disso, você precisa apenas declarar de definir a função UART_TransmitMessage, como mostrado abaixo:
+After this, you need to declare the definition of the function UART_TransmitMessage, as below:
 
 ```c
 static void UART_TransmitMessage(char *);
@@ -232,15 +219,16 @@ void UART_TransmitMessage(char * message) {
 	HAL_UART_Transmit(&huart1, (uint8_t *) message, strlen(message), 1000);
 }
 ```
+So, when pressing the following buttons on the remote controller and in the same order below, you will have a return on serial monitor the following messages:
 Assim, ao pressionar o seguintes botões no controle remoto e na ordem descrita abaixo, você terá como retorno no seu monitor de serial as seguintes mensagens:
 
-- Sequência de Botões: ON/OFF, Botão 0, Botão 1, Botão 2, Botão 3, Botão 4, Botão 5, Botão 6, Botão 7, Botão 8, Botão 9, Channel +, Channel -, Volume +, Volume -, Mute
+- Sequence of Buttons: ON/OFF, Button 0, Button 1, Button 2, Button 3, Button 4, Button 5, Button 6, Button 7, Button 8, Button 9, Channel +, Channel -, Volume +, Volume -, Mute
 
 <p align="center">
   <img src="images/serial_text.png" width="500" title="hover text">
 </p>
 
-Outro teste simples seria trocar a função My_IR_GetIrCommandText por My_IR_GetIrCommandInHex, recebendo assim como retorno na serial o código em hexadecimal dos comandos:
+Another simple test would be to change the function My_IR_GetIrCommandText for My_IR_GetIrCommandInHex, receiving the hexadecimal values of the commands on de serial monitor:
 
 ```c
 My_IR_Listening();
@@ -257,36 +245,36 @@ if (My_IR_ReceivedNewCommand) {
   <img src="images/serial_hex.png" width="500" title="hover text">
 </p>
 
-### Aplicação de Exemplo
+### Example of Application
 
-A aplicação disponibilizada na pasta 'example' desta biblioteca pode ser testada usando o STMCubeMX juntamente da SW4STM32 e basicamente simula um sistema que possui 3 canais, cada um indicado por um LED da seguinte forma:
+The applications on the example folder of this API can be tested using STMCubeMX and SW4STM32 and basically simulates a system that has 3 channels, each one indicates by a LED in the following way:
 
-- Canal 1: LED Vermelho
-- Canal 2: LED Verde
-- Canal 3: LED Azul
+- Channel 1: LED Red
+- Channel 2: LED Green
+- Channel 3: LED Blue
 
-Cada canal possui uma frequência de oscilação associada que pode ser controlada através dos botões de volume do controle:
+Each channel has an oscillation frequency associated  that can be controlled through the volume buttons on the remote controller:
 
-- Botão Volume + : Aumenta a frequência de oscilação do LED em 1Hz até um máximo de 10Hz
-- Botão Volume - : Diminui a frequência de oscilação do LED em 1Hz até o mínimo de 1Hz
+- Button Volume + : Increase the frequency of the LED in 1Hz until the maximum value of 10Hz.
+- Button Volume - : Decrease the frequency of the LED in 1Hz until the minimum value of 1Hz.
 
-É possível alternar entre os canais através do pressionameneto dos botões de canal do controle ou do pressionamento do número corresponde a um dos 3 canais:
+It is possible to alternate between channel pressing the button of channel  on the remote controller or pressing the correspondent number of one of the three channels:
 
-- Botão 1: Vai para o canal 1
-- Botão 2: Vai para o canal 2
-- Botão 3: Vai para o canal 3
-- Botão Channel + : Vai para o próximo canal de forma cíclica 
-	- Ex: canal 1 -> 2, canal 2 -> canal 3, canal 3 -> canal -> 1, ...
-- Botão Channel - : Vai para o canal anterior de forma cíclica 
-	- Ex: canal 1 -> 3, canal 3 -> canal 2, canal 2 -> canal -> 1, ...
+- Button 1: Go to channel 1
+- Button 2: Go to channel 2
+- Button 3: Go to channel 3
+- Button Channel + : Go to the next channel in a cyclical way
+	- Ex: channel 1 -> 2, channel 2 -> channel 3, channel 3 -> channel -> 1, ...
+- Button Channel - : Go to the previous channel in a cyclical way
+	- Ex: channel 1 -> 3, channel 3 -> channel 2, channel 2 -> channel -> 1, ...
 
-Ainda é possível zerar a oscilação do canal pressionando o botão Mute do controle, fazendo com que o LED fique cosntantemente desligado. Pressionar o booa Mute de novo fará com que o LED volte a piscar na frequência de 1Hz.
+It is still possible to make the LED stop oscillating by pressing the mute button on the controller, this will make the LED to be disabled until you press the mute button again and the LED returns blinking at 1Hz.
 
-Para testar esse programa foi usado o LED RGB presente na shield mencionada anteriormente e cada pino desse LED RGB foi associado a um canal PWM de um Timer (TIM3 CH2 -> R, TIM17 CH1 -> G e TIM4 CH1 -> B), onde cada um dos timers foi configurado com um Prescaler de 10000 e um Counter Period de 10000, de forma a obter um período de 1s par ticks de 1µs cada. A conexão dos pinos pode ser inferida das imagens fornecidas anteriormente.
+To test this application was used an RGB LED present on the shield that was mentioned previously and each of these LED pins was associated with a channel PWM of one Timer (TIM3 CH2 -> R, TIM17 CH1 -> G e TIM4 CH1 -> B) where each one of them is configured with a Prescaler of 10000 and a Counter Period of 10000, so each period of 1s have 1 clock ticks of 1µs.
 
-O funcionamento desse exemplo pode ser visto no vídeo no início desse repo e os códigos estão disponíveis na pasta 'example'.
+This example is demonstrated on the video at the start of the Readme and the codes are available on the example folder.
 
-## Referências
+## References
 
 - [ SIRC Remote Protocol Example (Another Protocol)](https://www.instructables.com/SIRC-Remote-Control/)
 
