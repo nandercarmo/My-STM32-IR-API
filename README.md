@@ -1,12 +1,14 @@
 
-# My-STM32-IR-API
-This project aims to consolidate the lessons of the UFMG "Embedded Systems Programming" course about the development of microcontrollers APIs, in this case for STM32 microcontrollers.
+#	📡	My-STM32-IR-API
+This project aims to consolidate the lessons of the **UFMG "Embedded Systems Programming"** course about the development of microcontrollers APIs, in this case for **STM32** microcontrollers.
 
 You can check this API working in the video bellow:
 
 [![Watch the video](images/video.png)](https://youtu.be/Hc2-oqp9iqE)
 
-## Hardware
+---
+
+##	⚙️	Hardware
 Para testar essa API você vai precisar de um sensor de IR. Durante o desenvolvimento utilizamos uma Shield Multifunções para Arduino, de forma a simplificar a montagem (inclusive o desenvolvimento da aplicação de exemplo). Os pinos e componentes da [shield](https://www.eletrogate.com/shield-multifuncoes-para-arduino-com-sensores) usada você pode ver na imagem abaixo:
 
 <p align="center">
@@ -19,7 +21,9 @@ Essa API foi desenvolvida e testada para o [Kit SMT32 Nucleo-G474RE](https://www
   <img src="images/stm32.png" width="500" title="hover text">
 </p>
 
-## IR Protocol
+---
+
+##	📶	IR Protocol
 
 A API desenvolvida é baseada em um protocolo de comunicação IR chamado NEC. Esse protocolo é um dos mais utilizados comercialmente e apresenta um baixo nível de complexidade e, como esperado, trabalha em cima de uma portadora com frequência de 38khz. Basicamente um comando enviado nesse protocolo segue o seguinte padrão:
 
@@ -48,7 +52,9 @@ Além desses comando simples, caso o mesmo comando seja enviado repetidas vezes 
   <img src="images/nec_rep_protocol.png" width="500" title="hover text">
 </p>
 
-## API
+---
+
+##	📨	API
 
 ### Defines
 
@@ -203,7 +209,9 @@ Esse arquivo auxiliar da biblioteca define os valores dos comandos mapeados para
 #define LG_COMMAND_MUTE 0xf609fb04
 ```
 
-## Exemplos
+---
+
+##	📩	Exemplos
 
 ### Simples
 
@@ -257,7 +265,7 @@ if (My_IR_ReceivedNewCommand) {
   <img src="images/serial_hex.png" width="500" title="hover text">
 </p>
 
-### Aplicação de Exemplo
+###	Aplicação de Exemplo
 
 A aplicação disponibilizada na pasta 'example' desta biblioteca pode ser testada usando o STMCubeMX juntamente da SW4STM32 e basicamente simula um sistema que possui 3 canais, cada um indicado por um LED da seguinte forma:
 
@@ -286,7 +294,9 @@ Para testar esse programa foi usado o LED RGB presente na shield mencionada ante
 
 O funcionamento desse exemplo pode ser visto no vídeo no início desse repo e os códigos estão disponíveis na pasta 'example'.
 
-## Referências
+---
+
+##	📖	Referências
 
 - [ SIRC Remote Protocol Example (Another Protocol)](https://www.instructables.com/SIRC-Remote-Control/)
 
