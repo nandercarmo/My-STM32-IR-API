@@ -1,5 +1,14 @@
 
 #	📡	My-STM32-IR-API
+
+<div align="left">
+    <img src="https://img.shields.io/badge/language-c-blue">
+    <img src="https://img.shields.io/badge/hardware-stm32-green">
+    <img src="https://img.shields.io/badge/license-MIT-blueviolet">
+</div>
+
+---
+
 This project aims to consolidate the lessons of the **UFMG "Embedded Systems Programming"** course about the development of microcontrollers APIs, in this case for **STM32** microcontrollers.
 
 You can check this API working in the video below:
